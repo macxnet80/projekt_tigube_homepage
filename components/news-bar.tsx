@@ -75,42 +75,42 @@ export function NewsBar() {
                   mehr dazu
                 </button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[425px]">
-                <DialogHeader>
-                  <DialogTitle className="text-2xl font-bold text-sage-800 text-center tracking-wide">
+              <DialogContent className="w-[95vw] sm:w-full sm:max-w-[425px] max-h-[90vh] sm:max-h-[85vh] overflow-y-auto p-4 sm:p-6">
+                <DialogHeader className="px-2 sm:px-0">
+                  <DialogTitle className="text-xl sm:text-2xl font-bold text-sage-800 text-center tracking-wide">
                     {settings.dialog_title}
                   </DialogTitle>
-                  <DialogDescription className="text-center text-sage-600 mt-2">
+                  <DialogDescription className="text-center text-sage-600 mt-2 text-sm sm:text-base px-2 sm:px-0">
                     {settings.dialog_description}
                   </DialogDescription>
                 </DialogHeader>
-                <div className="mt-6">
+                <div className="mt-4 sm:mt-6 px-2 sm:px-0">
                   {vacationDates.length > 0 ? (
-                  <div className="border-t-4 border-sage-600 pt-6">
+                  <div className="border-t-4 border-sage-600 pt-4 sm:pt-6">
                     {vacationDates.map((vacation, index) => (
                       <div
                           key={vacation.id || index}
-                        className="text-center py-3 border-b border-sage-100 last:border-b-0"
+                        className="text-center py-3 sm:py-3 border-b border-sage-100 last:border-b-0"
                       >
-                        <div className="font-semibold text-lg text-sage-800">
+                        <div className="font-semibold text-base sm:text-lg text-sage-800">
                           {vacation.period}
                         </div>
-                        <div className="text-sm text-sage-600 mt-1">
+                        <div className="text-xs sm:text-sm text-sage-600 mt-1">
                           {vacation.label}
                         </div>
                       </div>
                     ))}
                   </div>
                   ) : (
-                    <div className="text-center py-6 text-sage-600">
+                    <div className="text-center py-4 sm:py-6 text-sage-600 text-sm sm:text-base">
                       <p>Keine Ferienzeiten eingetragen</p>
                     </div>
                   )}
                   {settings.hint_text && (
-                  <div className="border-t-4 border-sage-600 mt-6 pt-4">
-                    <div className="text-center text-sm text-sage-700">
+                  <div className="border-t-4 border-sage-600 mt-4 sm:mt-6 pt-3 sm:pt-4">
+                    <div className="text-center text-xs sm:text-sm text-sage-700 px-2 sm:px-0">
                       <p className="font-medium">⚠️ Wichtiger Hinweis</p>
-                        <p className="mt-2">{settings.hint_text}</p>
+                        <p className="mt-2 leading-relaxed">{settings.hint_text}</p>
                       </div>
                     </div>
                   )}
