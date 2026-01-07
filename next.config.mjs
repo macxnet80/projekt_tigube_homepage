@@ -18,14 +18,66 @@ const nextConfig = {
   },
   async redirects() {
     return [
-      // Beispiel: Alte "Über uns" Seite auf die neue Startseite umleiten
-      // {
-      //   source: '/ueber-uns.html',
-      //   destination: '/',
-      //   permanent: true,
-      // },
-      // Hier können weitere Weiterleitungen eingetragen werden.
-      // Format: { source: '/alter-pfad', destination: '/neuer-pfad', permanent: true }
+      {
+        source: '/Start',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/Start/',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/Hundepension',
+        destination: '/hundepension',
+        permanent: true,
+      },
+      {
+        source: '/Hundepension/',
+        destination: '/hundepension',
+        permanent: true,
+      },
+      {
+        source: '/Unsere-Leistungen',
+        destination: '/#leistungen',
+        permanent: true,
+      },
+      {
+        source: '/Unsere-Leistungen/',
+        destination: '/#leistungen',
+        permanent: true,
+      },
+      {
+        source: '/Kundenstimmen',
+        destination: '/kundenstimmen',
+        permanent: true,
+      },
+      {
+        source: '/Kundenstimmen/',
+        destination: '/kundenstimmen',
+        permanent: true,
+      },
+      {
+        source: '/SeminareWorkshops',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/SeminareWorkshops/',
+        destination: '/',
+        permanent: true,
+      },
+      {
+        source: '/Katzenbetreuung',
+        destination: '/katzenbetreuung',
+        permanent: true,
+      },
+      {
+        source: '/Katzenbetreuung/',
+        destination: '/katzenbetreuung',
+        permanent: true,
+      },
     ]
   },
 }
