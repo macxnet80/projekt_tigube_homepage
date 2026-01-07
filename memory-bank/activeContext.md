@@ -6,6 +6,7 @@
 Das Projekt ist eine **funktionsfähige Homepage** für "Tierisch Gut Betreut" - einen Tierbetreuungsservice in Moos. Die Grundstruktur ist vollständig implementiert und einsatzbereit. Das Kontaktformular ist jetzt vollständig funktional mit Webhook-Integration und Datenbank-Support.
 
 ### Letzte Änderungen
+- **Google Links Redirects** - `next.config.mjs` vorbereitet für URL-Weiterleitungen (Redirects), um alte Links auf die Startseite umzuleiten.
 - **Kontaktformular erweitert** - Zusätzliche Felder für Hundepension-Anfragen implementiert
 - **Hundepension-spezifische Felder** - Name, Vorname, Anzahl Tiere, Tiernamen, Alter, Intakt/Kastriert, Schulferien BW, konkreter Urlaub mit Datumsbereich
 - **Date-Picker Integration** - Native HTML5 Date Inputs für Urlaubszeitraum (Von/Bis) mit klickbarem Kalender-Icon
