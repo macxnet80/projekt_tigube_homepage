@@ -24,19 +24,10 @@ const nextConfig = {
         permanent: false,
       },
       {
-        source: '/Start/',
-        destination: '/',
-        permanent: false,
-      },
-      {
         source: '/Hundepension',
         destination: '/hundepension',
         permanent: false,
-      },
-      {
-        source: '/Hundepension/',
-        destination: '/hundepension',
-        permanent: false,
+        caseSensitive: true,
       },
       {
         source: '/Unsere-Leistungen',
@@ -44,19 +35,10 @@ const nextConfig = {
         permanent: false,
       },
       {
-        source: '/Unsere-Leistungen/',
-        destination: '/#leistungen',
-        permanent: false,
-      },
-      {
         source: '/Kundenstimmen',
         destination: '/kundenstimmen',
         permanent: false,
-      },
-      {
-        source: '/Kundenstimmen/',
-        destination: '/kundenstimmen',
-        permanent: false,
+        caseSensitive: true,
       },
       {
         source: '/SeminareWorkshops',
@@ -64,19 +46,10 @@ const nextConfig = {
         permanent: false,
       },
       {
-        source: '/SeminareWorkshops/',
-        destination: '/',
-        permanent: false,
-      },
-      {
         source: '/Katzenbetreuung',
         destination: '/katzenbetreuung',
         permanent: false,
-      },
-      {
-        source: '/Katzenbetreuung/',
-        destination: '/katzenbetreuung',
-        permanent: false,
+        caseSensitive: true,
       },
     ]
   },
