@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createClient } from '@supabase/supabase-js'
 
 interface ContactFormData {
   name: string
@@ -75,62 +76,47 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Webhook URL aus Umgebungsvariablen
-    const webhookUrl = process.env.CONTACT_WEBHOOK_URL
-    const webhookSecret = process.env.CONTACT_WEBHOOK_SECRET
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.SUPABASE_SERVICE_ROLE_KEY!
+    )
 
-    if (!webhookUrl) {
-      console.error('CONTACT_WEBHOOK_URL ist nicht gesetzt')
-      return NextResponse.json(
-        { error: 'Webhook-Konfiguration fehlt' },
-        { status: 500 }
-      )
-    }
-
-    // Daten für Webhook vorbereiten
-    const webhookData = {
-      ...formData,
+    const { error: dbError } = await supabase.from('contact_requests').insert({
+      name: formData.name,
+      vorname: formData.vorname ?? null,
+      email: formData.email,
+      phone: formData.phone,
+      service: formData.service,
+      pet: formData.pet ?? null,
+      message: formData.message,
+      availability: formData.availability,
+      privacy: formData.privacy,
+      anzahl_tiere: formData.anzahlTiere ?? null,
+      tiernamen: formData.tiernamen ?? null,
+      schulferien_bw: formData.schulferienBW ?? null,
+      konkreter_urlaub: formData.konkreterUrlaub ?? null,
+      urlaub_von: formData.urlaubVon ?? null,
+      urlaub_bis: formData.urlaubBis ?? null,
+      intakt_kastriert: formData.intaktKastriert ?? null,
+      alter_tier: formData.alter ?? null,
+      ip_address: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || null,
+      user_agent: request.headers.get('user-agent') || null,
       timestamp: formData.timestamp || new Date().toISOString(),
-      ip: request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || 'unbekannt',
-      userAgent: request.headers.get('user-agent') || 'unbekannt',
-    }
-
-    // Webhook-Request konfigurieren
-    const headers: HeadersInit = {
-      'Content-Type': 'application/json',
-    }
-
-    // Optional: Webhook Secret hinzufügen
-    if (webhookSecret) {
-      headers['X-Webhook-Secret'] = webhookSecret
-    }
-
-    // Daten an Webhook senden
-    const webhookResponse = await fetch(webhookUrl, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(webhookData),
+      status: 'new',
     })
 
-    if (!webhookResponse.ok) {
-      const errorText = await webhookResponse.text()
-      console.error('Webhook-Fehler:', {
-        status: webhookResponse.status,
-        statusText: webhookResponse.statusText,
-        error: errorText,
-      })
-      
+    if (dbError) {
+      console.error('Supabase-Fehler beim Speichern der Kontaktanfrage:', dbError)
       return NextResponse.json(
-        { error: 'Fehler beim Senden der Anfrage' },
+        { error: 'Fehler beim Speichern der Anfrage' },
         { status: 500 }
       )
     }
 
-    console.log('Kontaktanfrage erfolgreich an Webhook gesendet:', {
+    console.log('Kontaktanfrage erfolgreich in Supabase gespeichert:', {
       service: formData.service,
       name: formData.name,
       email: formData.email,
-      timestamp: webhookData.timestamp,
     })
 
     // Erfolg zurückgeben
