@@ -8,14 +8,41 @@ export interface User {
   updated_at: string
 }
 
-export interface Customer {
+/** Vereinheitlichte Kontaktzeile (Tabelle `contacts`): Leads, Kunden, verloren */
+export type ContactType = 'lead' | 'customer' | 'lost'
+/** Lead: new/contacted · Kunde: pending/active */
+export type ContactStatus = 'new' | 'contacted' | 'pending' | 'active'
+
+export interface Contact {
   id: string
+  contact_type: ContactType
+  status: ContactStatus | null
+  nachname: string
+  vorname: string | null
+  email: string
+  telefonnummer: string
+  service: string
+  pet: string | null
+  message: string
+  availability: string
+  datenschutz: boolean
+  anzahl_tiere: string | null
+  tiernamen: string | null
+  schulferien_bw: boolean | null
+  konkreter_urlaub: string | null
+  urlaub_von: string | null
+  urlaub_bis: string | null
+  intakt_kastriert: string | null
+  alter_tier: string | null
+  ip_address: string | null
+  user_agent: string | null
+  timestamp: string | null
+  created_at: string
+  updated_at: string
+  properties: Record<string, unknown>
+  assigned_to: string | null
   user_id: string | null
   kundennummer: string | null
-  nachname: string
-  vorname: string
-  email: string
-  telefonnummer: string | null
   telefon_2: string | null
   notfall_kontakt_name: string | null
   notfallnummer: string | null
@@ -24,12 +51,11 @@ export interface Customer {
   besonderheiten: string | null
   intervall_impfung: string | null
   intervall_entwurmung: string | null
-  datenschutz: boolean
   onboarding_completed: boolean
-  status: 'pending' | 'active'
-  created_at: string
-  updated_at: string
 }
+
+/** Alias — Kunden sind `contacts` mit contact_type customer */
+export type Customer = Contact
 
 export interface Pet {
   id: string
@@ -61,19 +87,21 @@ export interface Document {
   created_at: string
 }
 
+/** Onboarding-Link (customer_id zeigt auf `contacts`) */
 export interface OnboardingToken {
   id: string
-  contact_request_id: number
+  customer_id: string | null
   token: string
-  expires_at: string
+  expires_at: string | null
   used: boolean
   used_at: string | null
   created_at: string
 }
 
-export interface LeadNote {
+/** Notizen in `notes` für einen Kontakt (Lead oder Kunde) */
+export interface ContactNote {
   id: string
-  contact_request_id: number
+  contact_id: string
   note: string
   created_by: string | {
     email: string
@@ -83,47 +111,14 @@ export interface LeadNote {
   updated_at: string
 }
 
-export interface CustomerNote {
-  id: string
-  customer_id: string
-  note: string
-  created_by: string | {
-    email: string
-    role: string
-  }
-  created_at: string
-  updated_at: string
-}
+/** @deprecated Umbenannt in ContactNote */
+export type LeadNote = ContactNote
 
-export interface ContactRequest {
-  id: number
-  name: string
-  vorname: string | null
-  email: string
-  phone: string
-  service: string
-  pet: string | null
-  message: string
-  availability: string
-  privacy: boolean
-  anzahl_tiere: string | null
-  tiernamen: string | null
-  schulferien_bw: boolean | null
-  konkreter_urlaub: string | null
-  urlaub_von: string | null
-  urlaub_bis: string | null
-  intakt_kastriert: string | null
-  alter_tier: string | null
-  ip_address: string | null
-  user_agent: string | null
-  timestamp: string
-  created_at: string
-  updated_at: string
-  // Neue Felder
-  status: 'new' | 'contacted' | 'converted' | 'declined'
-  properties: Record<string, any>
-  assigned_to: string | null
-}
+/** @deprecated Umbenannt in ContactNote */
+export type CustomerNote = ContactNote
+
+/** Lead-Zeilen aus der API (= Contact mit typ lead) — gleiche Form wie Contact */
+export type ContactRequest = Contact
 
 // Testimonial type definition
 export interface Testimonial {

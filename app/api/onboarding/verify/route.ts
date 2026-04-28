@@ -83,9 +83,10 @@ export async function POST(request: NextRequest) {
       console.log('Fetching customer with ID:', tokenData.customer_id)
       // Verwende limit(1) statt single() um RLS-Probleme zu vermeiden
       const { data: customerDataArray, error: customerError } = await supabase
-        .from('customers')
+        .from('contacts')
         .select('*')
         .eq('id', tokenData.customer_id)
+        .eq('contact_type', 'customer')
         .limit(1)
 
       if (customerError) {
@@ -138,13 +139,19 @@ export async function POST(request: NextRequest) {
       valid: true,
       token: tokenData,
       customer: customer,
-      // Für Kompatibilität mit Frontend
+      // Für Kompatibilität mit Frontend (Onboarding zeigt lead-Preview)
       lead: {
         id: customer.id,
-        name: customer.nachname,
+        nachname: customer.nachname,
         vorname: customer.vorname,
         email: customer.email,
-        phone: customer.telefonnummer,
+        telefonnummer: customer.telefonnummer,
+        contact_type: 'customer',
+        status: customer.status,
+        service: customer.service,
+        message: customer.message,
+        availability: customer.availability,
+        datenschutz: customer.datenschutz,
       },
     }
 

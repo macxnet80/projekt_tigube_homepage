@@ -83,12 +83,12 @@ export async function GET(
       )
     }
 
-    const leadId = parseInt(params.id)
+    const contactId = params.id
 
     const { data, error } = await supabase
-      .from('lead_notes')
+      .from('notes')
       .select('*, created_by:users(email, role)')
-      .eq('contact_request_id', leadId)
+      .eq('contact_id', contactId)
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -120,7 +120,7 @@ export async function POST(
       )
     }
 
-    const leadId = parseInt(params.id)
+    const contactId = params.id
     const { note } = await request.json()
 
     if (!note || note.trim().length === 0) {
@@ -131,9 +131,9 @@ export async function POST(
     }
 
     const { data, error } = await supabase
-      .from('lead_notes')
+      .from('notes')
       .insert({
-        contact_request_id: leadId,
+        contact_id: contactId,
         note: note.trim(),
         created_by: authResult.user.id,
       })

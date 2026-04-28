@@ -60,13 +60,14 @@ export async function POST(request: NextRequest) {
         // Aktualisiere Customer: Setze user_id und Status auf "active"
         // onboarding_completed bleibt false bis der User sein Profil ausgefüllt hat
         const { data: updatedCustomer, error: customerError } = await supabaseAdmin
-          .from('customers')
+          .from('contacts')
           .update({
             user_id: user.id,
             status: 'active',
             onboarding_completed: false,
           })
           .eq('id', tokenData.customer_id)
+          .eq('contact_type', 'customer')
           .eq('email', email) // Sicherheitscheck: Email muss übereinstimmen
           .select()
           .single()
@@ -83,10 +84,11 @@ export async function POST(request: NextRequest) {
       } else {
         // Fallback: Finde Customer über Email
         const { data: customer, error: customerFindError } = await supabaseAdmin
-          .from('customers')
+          .from('contacts')
           .select('id, email')
           .eq('email', email)
           .eq('status', 'pending')
+          .eq('contact_type', 'customer')
           .single()
 
         if (customerFindError) {
@@ -95,13 +97,14 @@ export async function POST(request: NextRequest) {
 
         if (customer) {
           const { data: updatedCustomer, error: customerError } = await supabaseAdmin
-            .from('customers')
+            .from('contacts')
             .update({
               user_id: user.id,
               status: 'active',
               onboarding_completed: false,
             })
             .eq('id', customer.id)
+            .eq('contact_type', 'customer')
             .select()
             .single()
 

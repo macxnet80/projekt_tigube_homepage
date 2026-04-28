@@ -93,9 +93,10 @@ export async function GET(request: NextRequest) {
 
     // Versuche zuerst über user_id zu finden
     let { data, error } = await supabase
-      .from('customers')
+      .from('contacts')
       .select('*')
       .eq('user_id', userData.id)
+      .eq('contact_type', 'customer')
       .single()
 
     console.log('Query by user_id result:', { data: data?.id, error: error?.code, errorMessage: error?.message })
@@ -104,9 +105,10 @@ export async function GET(request: NextRequest) {
     if ((error && error.code === 'PGRST116') || !data) {
       console.log('Customer nicht über user_id gefunden, versuche über Email:', authUser.email)
       const { data: emailData, error: emailError } = await supabase
-        .from('customers')
+        .from('contacts')
         .select('*')
         .eq('email', authUser.email)
+        .eq('contact_type', 'customer')
         .single()
 
       console.log('Query by email result:', { data: emailData?.id, error: emailError?.code, errorMessage: emailError?.message })
@@ -185,18 +187,20 @@ export async function PUT(request: NextRequest) {
 
     // Prüfe ob Customer bereits existiert
     const { data: existing } = await supabase
-      .from('customers')
+      .from('contacts')
       .select('id')
       .eq('user_id', userData.id)
+      .eq('contact_type', 'customer')
       .single()
 
     let result
     if (existing) {
       // Update
       const { data, error } = await supabase
-        .from('customers')
+        .from('contacts')
         .update(updates)
         .eq('user_id', userData.id)
+        .eq('contact_type', 'customer')
         .select()
         .single()
 
@@ -205,11 +209,22 @@ export async function PUT(request: NextRequest) {
     } else {
       // Create
       const { data, error } = await supabase
-        .from('customers')
+        .from('contacts')
         .insert({
           user_id: userData.id,
           email: authUser.email,
+          contact_type: 'customer',
+          status: 'active',
+          service: 'portal',
+          message: '',
+          availability: '-',
+          nachname: '',
+          vorname: '',
+          telefonnummer: '',
+          datenschutz: false,
+          onboarding_completed: false,
           ...updates,
+          contact_type: 'customer',
         })
         .select()
         .single()

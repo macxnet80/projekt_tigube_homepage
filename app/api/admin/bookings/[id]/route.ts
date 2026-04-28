@@ -111,7 +111,7 @@ export async function PATCH(
       .select(`
         *,
         pet:pets(id, name, tierart),
-        customer:customers(id, vorname, nachname, email, telefonnummer),
+        customer:contacts!bookings_customer_id_fkey(id, vorname, nachname, email, telefonnummer),
         responded_by_user:users!bookings_responded_by_fkey(id, email)
       `)
       .single()

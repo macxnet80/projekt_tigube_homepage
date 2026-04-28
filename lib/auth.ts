@@ -10,8 +10,14 @@ import type { User } from './types'
  * Prüft ob ein User eingeloggt ist
  */
 export async function getCurrentUser(): Promise<User | null> {
-  const { data: { user }, error } = await supabase.auth.getUser()
-  
+  /** Session erst aus Storage/Memory laden – vermeidet Race nach Full-Page-Load vor getUser(). */
+  await supabase.auth.getSession()
+
+  const {
+    data: { user },
+    error,
+  } = await supabase.auth.getUser()
+
   if (error || !user) {
     return null
   }

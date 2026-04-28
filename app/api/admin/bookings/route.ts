@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
       .select(`
         *,
         pet:pets(id, name, tierart),
-        customer:customers(id, vorname, nachname, email, telefonnummer),
+        customer:contacts!bookings_customer_id_fkey(id, vorname, nachname, email, telefonnummer),
         responded_by_user:users!bookings_responded_by_fkey(id, email)
       `)
       .order('created_at', { ascending: false })

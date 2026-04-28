@@ -85,9 +85,10 @@ export async function PUT(
 
     // Prüfe ob Pet zum User gehört
     const { data: customer } = await supabase
-      .from('customers')
+      .from('contacts')
       .select('id')
       .eq('user_id', userData.id)
+      .eq('contact_type', 'customer')
       .single()
 
     if (!customer) {
@@ -166,9 +167,10 @@ export async function DELETE(
 
     // Prüfe ob Pet zum User gehört
     const { data: customer } = await supabase
-      .from('customers')
+      .from('contacts')
       .select('id')
       .eq('user_id', userData.id)
+      .eq('contact_type', 'customer')
       .single()
 
     if (!customer) {

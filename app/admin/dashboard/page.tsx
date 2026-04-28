@@ -23,7 +23,27 @@ export default function AdminDashboard() {
         const allResponse = await fetch('/api/admin/leads', {
           credentials: 'include',
         })
-        const allData = await allResponse.json()
+        let allData: { leads?: ContactRequest[]; error?: string } = {}
+        try {
+          allData = await allResponse.json()
+        } catch {
+          console.error('Dashboard: Antwort ist kein gültiges JSON (/api/admin/leads)')
+        }
+
+        const custResp = await fetch('/api/admin/customers', { credentials: 'include' })
+        let custData: { customers?: unknown[]; error?: string } = {}
+        try {
+          custData = await custResp.json()
+        } catch {
+          console.error('Dashboard: Antwort ist kein gültiges JSON (/api/admin/customers)')
+        }
+
+        if (!allResponse.ok && allData.error) {
+          console.error('Leads API:', allResponse.status, allData.error)
+        }
+        if (!custResp.ok && custData.error) {
+          console.error('Kunden API:', custResp.status, custData.error)
+        }
 
         if (allData.leads) {
           const allLeads = allData.leads as ContactRequest[]
@@ -35,16 +55,23 @@ export default function AdminDashboard() {
           setStats({
             new: newCount,
             contacted: contactedCount,
-            converted: 0, // Nicht mehr relevant, da Leads gelöscht werden
+            converted: (custData.customers || []).length,
             total: allLeads.length,
           })
         }
 
-        // Lade nur neue Leads für die Liste
         const newResponse = await fetch('/api/admin/leads?status=new', {
           credentials: 'include',
         })
-        const newData = await newResponse.json()
+        let newData: { leads?: ContactRequest[]; error?: string } = {}
+        try {
+          newData = await newResponse.json()
+        } catch {
+          console.error('Dashboard: Antwort ist kein gültiges JSON (/api/admin/leads?status=new)')
+        }
+        if (!newResponse.ok && newData.error) {
+          console.error('Leads API (neu):', newResponse.status, newData.error)
+        }
 
         if (newData.leads) {
           const newLeads = newData.leads as ContactRequest[]
@@ -142,20 +169,18 @@ export default function AdminDashboard() {
                 >
                   <div>
                     <h3 className="font-semibold text-sage-900">
-                      {lead.name} {lead.vorname}
+                      {lead.nachname} {lead.vorname}
                     </h3>
                     <p className="text-sm text-sage-600">{lead.email}</p>
-                    <p className="text-sm text-sage-600">{lead.phone}</p>
+                    <p className="text-sm text-sage-600">{lead.telefonnummer}</p>
                     <span className={`inline-block mt-2 px-2 py-1 text-xs rounded ${
                       lead.status === 'new' ? 'bg-blue-100 text-blue-800' :
                       lead.status === 'contacted' ? 'bg-yellow-100 text-yellow-800' :
-                      lead.status === 'converted' ? 'bg-green-100 text-green-800' :
                       'bg-gray-100 text-gray-800'
                     }`}>
                       {lead.status === 'new' ? 'Neu' :
                        lead.status === 'contacted' ? 'Kontaktiert' :
-                       lead.status === 'converted' ? 'Konvertiert' :
-                       'Abgelehnt'}
+                       String(lead.status)}
                     </span>
                   </div>
                   <Link href={`/admin/leads/${lead.id}`}>

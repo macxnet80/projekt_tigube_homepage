@@ -14,9 +14,10 @@ export async function GET(request: NextRequest) {
 
     // Hole Customer-ID
     const { data: customer } = await supabase
-      .from('customers')
+      .from('contacts')
       .select('id')
       .eq('user_id', user.id)
+      .eq('contact_type', 'customer')
       .single()
 
     if (!customer) {
@@ -67,9 +68,10 @@ export async function POST(request: NextRequest) {
 
     // Hole Customer-ID
     const { data: customer } = await supabase
-      .from('customers')
+      .from('contacts')
       .select('id')
       .eq('user_id', user.id)
+      .eq('contact_type', 'customer')
       .single()
 
     if (!customer) {

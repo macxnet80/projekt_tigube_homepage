@@ -81,16 +81,17 @@ export async function POST(request: NextRequest) {
       process.env.SUPABASE_SERVICE_ROLE_KEY!
     )
 
-    const { error: dbError } = await supabase.from('contact_requests').insert({
-      name: formData.name,
+    const { error: dbError } = await supabase.from('contacts').insert({
+      contact_type: 'lead',
+      nachname: formData.name,
       vorname: formData.vorname ?? null,
       email: formData.email,
-      phone: formData.phone,
+      telefonnummer: formData.phone,
       service: formData.service,
       pet: formData.pet ?? null,
       message: formData.message,
       availability: formData.availability,
-      privacy: formData.privacy,
+      datenschutz: formData.privacy,
       anzahl_tiere: formData.anzahlTiere ?? null,
       tiernamen: formData.tiernamen ?? null,
       schulferien_bw: formData.schulferienBW ?? null,

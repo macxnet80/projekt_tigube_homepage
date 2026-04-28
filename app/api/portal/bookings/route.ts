@@ -76,9 +76,10 @@ export async function GET(request: NextRequest) {
 
     // Hole Customer-ID
     const { data: customer } = await supabase
-      .from('customers')
+      .from('contacts')
       .select('id')
       .eq('user_id', userData.id)
+      .eq('contact_type', 'customer')
       .single()
 
     if (!customer) {
@@ -94,7 +95,7 @@ export async function GET(request: NextRequest) {
       .select(`
         *,
         pet:pets(id, name, tierart),
-        customer:customers(id, vorname, nachname)
+        customer:contacts!bookings_customer_id_fkey(id, vorname, nachname)
       `)
       .eq('customer_id', customer.id)
       .order('start_date', { ascending: false })
@@ -161,9 +162,10 @@ export async function POST(request: NextRequest) {
 
     // Hole Customer-ID
     const { data: customer } = await supabase
-      .from('customers')
+      .from('contacts')
       .select('id')
       .eq('user_id', userData.id)
+      .eq('contact_type', 'customer')
       .single()
 
     if (!customer) {
@@ -220,7 +222,7 @@ export async function POST(request: NextRequest) {
       .select(`
         *,
         pet:pets(id, name, tierart),
-        customer:customers(id, vorname, nachname)
+        customer:contacts!bookings_customer_id_fkey(id, vorname, nachname)
       `)
       .single()
 

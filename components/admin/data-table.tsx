@@ -89,6 +89,42 @@ export function DataTable({
     setEditValue('')
   }
 
+  /** Festbreite-Spalte: Button (~4.6875rem) + Zell‑Padding (~1rem) → keine elastische #-Spalte */
+  const ID_COL_TABLE_CLASS =
+    '!w-[5.6875rem] min-w-[5.6875rem] max-w-[5.6875rem] shrink-0 whitespace-nowrap p-2 px-3 text-center align-middle box-border'
+
+  function renderOpenColumnCell(row: Record<string, any>, rowIndex: number) {
+    const path = entityType === 'lead' ? 'leads' : 'customers'
+    return (
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className={cn(
+          'relative mx-auto inline-flex h-9 w-[4.6875rem] shrink-0 items-center justify-center overflow-hidden border-sage-300',
+          'bg-background px-2 font-normal text-sage-900 hover:bg-sage-50',
+          'group/op'
+        )}
+        onClick={(e) => {
+          e.stopPropagation()
+          window.location.href = `/admin/${path}/${row.id}`
+        }}
+      >
+        <span className="w-full tabular-nums text-center transition-opacity group-hover/op:opacity-0">
+          {rowIndex}
+        </span>
+        <span
+          className={cn(
+            'pointer-events-none absolute inset-0 flex items-center justify-center',
+            'rounded-[inherit] bg-background text-xs font-semibold tracking-tight text-sage-900',
+            'opacity-0 transition-opacity group-hover/op:opacity-100'
+          )}
+        >
+          Öffnen
+        </span>
+      </Button>
+    )
+  }
 
   function renderCell(row: Record<string, any>, column: TableColumn) {
     const value = getCellValue(row, column)
@@ -101,19 +137,8 @@ export function DataTable({
     return renderDisplayCell(value, column)
   }
 
-  function renderDisplayCell(value: any, column: TableColumn, rowId?: string | number) {
+  function renderDisplayCell(value: any, column: TableColumn) {
     switch (column.fieldType) {
-      case 'id':
-        return (
-          <div className="flex items-center justify-between w-full h-full">
-            <span className="text-sage-600 group-hover:hidden">
-              {value}
-            </span>
-            <span className="text-sm text-sage-500 font-bold hidden group-hover:block">
-              öffnen
-            </span>
-          </div>
-        )
       case 'timestamp':
       case 'date':
         if (!value) return <span className="text-sage-400">-</span>
@@ -274,11 +299,15 @@ export function DataTable({
                  {columns.map((column) => (
                    <TableHead
                      key={column.id}
-                     style={{ 
-                       width: column.width,
-                       minWidth: column.fieldType === 'id' ? 100 : column.width
+                     style={{
+                       ...(column.fieldType !== 'id' && column.width !== undefined
+                         ? { width: column.width, minWidth: column.width }
+                         : {}),
                      }}
-                     className="sticky top-0 bg-sage-50 z-10"
+                     className={cn(
+                       'sticky top-0 bg-sage-50 z-10',
+                       column.fieldType === 'id' && ID_COL_TABLE_CLASS
+                     )}
                    >
                      <span>{column.label}</span>
                    </TableHead>
@@ -303,29 +332,28 @@ export function DataTable({
                   </TableCell>
                 </TableRow>
               ) : (
-                data.map((row) => (
+                data.map((row, index) => (
                   <TableRow key={row.id} className="hover:bg-sage-50/50">
                      {columns.map((column) => (
                        <TableCell
                          key={column.id}
                          className={cn(
-                           column.fieldType === 'id' && 'p-4 cursor-pointer group hover:bg-sage-100 transition-colors',
-                           column.fieldType !== 'id' && column.fieldType !== 'timestamp' && 'cursor-pointer hover:bg-sage-100'
+                           column.fieldType === 'id' &&
+                             cn(ID_COL_TABLE_CLASS),
+                           column.fieldType !== 'id' &&
+                             column.fieldType !== 'timestamp' &&
+                             'cursor-pointer hover:bg-sage-100'
                          )}
                          onClick={() => {
-                           if (column.fieldType === 'id') {
-                             window.location.href = `/admin/${entityType === 'lead' ? 'leads' : 'customers'}/${row.id}`
-                             return
-                           }
-                           if (column.fieldType !== 'id' && column.fieldType !== 'timestamp') {
+                           if (column.fieldType === 'id') return
+                           if (column.fieldType !== 'timestamp') {
                              handleCellClick(row.id, column.id)
                            }
                          }}
                        >
-                         {column.fieldType === 'id' 
-                           ? renderDisplayCell(getCellValue(row, column), column, row.id)
-                           : renderCell(row, column)
-                         }
+                         {column.fieldType === 'id'
+                           ? renderOpenColumnCell(row, index + 1)
+                           : renderCell(row, column)}
                        </TableCell>
                      ))}
                     <TableCell></TableCell>

@@ -6,14 +6,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import type { ContactRequest } from '@/lib/types'
+import type { Contact } from '@/lib/types'
 
 export default function OnboardingPage() {
   const params = useParams()
   const router = useRouter()
   const token = params.token as string
 
-  const [lead, setLead] = useState<ContactRequest | null>(null)
+  const [lead, setLead] = useState<Partial<Contact> | null>(null)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -39,7 +39,8 @@ export default function OnboardingPage() {
       console.log('Response status:', response.status, response.statusText)
       console.log('Response headers:', Object.fromEntries(response.headers.entries()))
 
-      let data = {}
+      type VerifyJson = { error?: string; message?: string; lead?: Partial<Contact> }
+      let data: VerifyJson = {}
       let responseText = ''
       
       try {
@@ -48,7 +49,7 @@ export default function OnboardingPage() {
         
         if (responseText) {
           try {
-            data = JSON.parse(responseText)
+            data = JSON.parse(responseText) as VerifyJson
             console.log('Parsed data:', data)
           } catch (parseError) {
             console.error('JSON parse error:', parseError)
@@ -182,7 +183,7 @@ export default function OnboardingPage() {
                 <strong>Ihre Daten:</strong>
               </p>
               <p className="text-sm text-sage-600 mt-1">
-                {lead.name} {lead.vorname}
+                {lead.nachname} {lead.vorname}
               </p>
               <p className="text-sm text-sage-600">{lead.email}</p>
             </div>

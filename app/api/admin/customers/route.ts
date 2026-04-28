@@ -82,8 +82,9 @@ export async function GET(request: NextRequest) {
     }
 
     const { data: customers, error } = await supabase
-      .from('customers')
+      .from('contacts')
       .select('*')
+      .eq('contact_type', 'customer')
       .order('created_at', { ascending: false })
 
     if (error) {

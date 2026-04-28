@@ -6,21 +6,20 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Badge } from '@/components/ui/badge'
 import { ArrowLeft } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import Link from 'next/link'
-import type { ContactRequest, LeadNote } from '@/lib/types'
+import type { Contact, ContactNote } from '@/lib/types'
 import { PropertyEditor } from '@/components/admin/property-editor'
 
 export default function LeadDetailPage() {
   const params = useParams()
   const router = useRouter()
-  const leadId = parseInt(params.id as string)
+  const leadId = params.id as string
   const { toast } = useToast()
 
-  const [lead, setLead] = useState<ContactRequest | null>(null)
-  const [notes, setNotes] = useState<LeadNote[]>([])
+  const [lead, setLead] = useState<Contact | null>(null)
+  const [notes, setNotes] = useState<ContactNote[]>([])
   const [loading, setLoading] = useState(true)
   const [newNote, setNewNote] = useState('')
 
@@ -39,7 +38,7 @@ export default function LeadDetailPage() {
       const data = await response.json()
 
       if (data.leads) {
-        const foundLead = data.leads.find((l: ContactRequest) => l.id === leadId)
+        const foundLead = data.leads.find((l: Contact) => String(l.id) === String(leadId))
         if (foundLead) {
           setLead(foundLead)
         } else {
@@ -187,6 +186,27 @@ export default function LeadDetailPage() {
     }
   }
 
+  async function markAsLost() {
+    if (!lead) return
+    try {
+      const response = await fetch('/api/admin/leads', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: leadId, contact_type: 'lost', status: null }),
+        credentials: 'include',
+      })
+      if (response.ok) {
+        toast({ title: 'Als verloren markiert' })
+        router.push('/admin/leads')
+      } else {
+        const err = await response.json()
+        toast({ title: 'Fehler', description: err.error || '', variant: 'destructive' })
+      }
+    } catch {
+      toast({ title: 'Fehler', variant: 'destructive' })
+    }
+  }
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -219,7 +239,7 @@ export default function LeadDetailPage() {
         </Link>
         <div>
           <h1 className="text-3xl font-bold text-sage-900">
-            Lead: {lead.name} {lead.vorname}
+            Lead: {lead.nachname} {lead.vorname}
           </h1>
           <p className="mt-2 text-sage-600">Lead-Details und Verwaltung</p>
         </div>
@@ -234,7 +254,7 @@ export default function LeadDetailPage() {
           <CardContent className="space-y-4">
             <div>
               <Label>Name</Label>
-              <p className="text-sage-900 font-medium">{lead.name} {lead.vorname}</p>
+              <p className="text-sage-900 font-medium">{lead.nachname} {lead.vorname}</p>
             </div>
             <div>
               <Label>E-Mail</Label>
@@ -242,7 +262,7 @@ export default function LeadDetailPage() {
             </div>
             <div>
               <Label>Telefon</Label>
-              <p className="text-sage-900">{lead.phone}</p>
+              <p className="text-sage-900">{lead.telefonnummer}</p>
             </div>
             <div>
               <Label>Service</Label>
@@ -340,16 +360,8 @@ export default function LeadDetailPage() {
                 >
                   Kontaktiert
                 </Button>
-                <Button
-                  size="sm"
-                  variant={lead.status === 'converted' ? 'default' : 'outline'}
-                  onClick={() => updateLeadStatus('converted')}
-                >
-                  Konvertiert
-                </Button>
               </div>
             </div>
-
 
             {/* Notizen */}
             <div>
@@ -390,6 +402,9 @@ export default function LeadDetailPage() {
               className="w-full bg-sage-600 hover:bg-sage-700"
             >
               Zum Kunden konvertieren
+            </Button>
+            <Button variant="outline" className="w-full" onClick={markAsLost}>
+              Als verloren markieren
             </Button>
           </CardContent>
         </Card>

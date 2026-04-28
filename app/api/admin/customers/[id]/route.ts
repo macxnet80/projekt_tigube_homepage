@@ -72,9 +72,10 @@ export async function GET(
 
     // Hole Customer mit allen verknüpften Daten
     const { data: customer, error: customerError } = await supabase
-      .from('customers')
+      .from('contacts')
       .select('*, pets(*), documents(*)')
       .eq('id', customerId)
+      .eq('contact_type', 'customer')
       .single()
 
     if (customerError || !customer) {
@@ -145,9 +146,10 @@ export async function PUT(
     const updates = await request.json()
 
     const { data: customer, error: customerError } = await supabase
-      .from('customers')
+      .from('contacts')
       .update(updates)
       .eq('id', customerId)
+      .eq('contact_type', 'customer')
       .select()
       .single()
 

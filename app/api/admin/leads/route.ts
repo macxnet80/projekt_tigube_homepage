@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@supabase/supabase-js'
-import type { ContactRequest } from '@/lib/types'
 
 function getServerClient(request: NextRequest) {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
@@ -91,8 +90,9 @@ export async function GET(request: NextRequest) {
     const status = searchParams.get('status')
 
     let query = supabase
-      .from('contact_requests')
+      .from('contacts')
       .select('*')
+      .eq('contact_type', 'lead')
       .order('created_at', { ascending: false })
 
     if (status) {
@@ -195,9 +195,10 @@ export async function PUT(request: NextRequest) {
     }
 
     const { data, error } = await supabase
-      .from('contact_requests')
+      .from('contacts')
       .update(updates)
       .eq('id', id)
+      .in('contact_type', ['lead', 'lost'])
       .select()
       .single()
 

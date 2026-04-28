@@ -86,9 +86,9 @@ export async function GET(
     const customerId = params.id
 
     const { data, error } = await supabase
-      .from('customer_notes')
+      .from('notes')
       .select('*, created_by:users(email, role)')
-      .eq('customer_id', customerId)
+      .eq('contact_id', customerId)
       .order('created_at', { ascending: false })
 
     if (error) {
@@ -131,9 +131,9 @@ export async function POST(
     }
 
     const { data, error } = await supabase
-      .from('customer_notes')
+      .from('notes')
       .insert({
-        customer_id: customerId,
+        contact_id: customerId,
         note: note.trim(),
         created_by: authResult.user.id,
       })

@@ -20,7 +20,7 @@ export async function DELETE(
     // Hole Document-Daten
     const { data: document, error: docError } = await supabase
       .from('documents')
-      .select('*, customer:customers!inner(user_id)')
+      .select('*, customer:contacts!documents_customer_id_fkey(user_id)')
       .eq('id', documentId)
       .single()
 
